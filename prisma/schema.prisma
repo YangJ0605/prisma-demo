@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  // url      = "postgres://blog:cc1234@1.12.232.127:5432/blog_development"
+  url      = "file:./db.db"
+}
+
+model user {
+  id        Int      @id @default(autoincrement())
+  // @map 作用是为字段起一个别名，表示数据库生成的字段名
+  userName  String   @unique @map("user_name")
+  password  String   @default("")
+  nickName  String   @default("") @map("nick_name")
+  address   String   @default("")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  // 表明一对多，一个user可以有多个post
+  post post[]
+  // @@map 作用是为数据库的表起名字
+  @@map("users")
+}
+
+model post {
+  id        Int      @id @default(autoincrement())
+  title     String   @default("")
+  desc      String   @default("")
+  content   String   @default("")
+  // 建立关联关系
+  // fields 当前模型中的数据
+  // references 表示关联模型中的数据
+  author    user?    @relation(fields: [authorId], references: [id])
+  authorId  Int?     @map("author_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @default(now()) @map("updated_at")
+
+  @@map("posts")
+}
